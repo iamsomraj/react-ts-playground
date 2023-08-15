@@ -1,9 +1,11 @@
 import HelloWorld from './components/HelloWorld';
-
+import { ThemeContextProvider } from './context/ThemeContext';
 function App() {
   return (
     <>
-      <HelloWorld />
+      <ThemeContextProvider>
+        <HelloWorld />
+      </ThemeContextProvider>
     </>
   );
 }
