@@ -1,9 +1,15 @@
-import HelloWorld from './components/HelloWorld';
+import { useState } from 'react';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
+  const [error, setError] = useState<boolean>();
   return (
     <>
-      <HelloWorld />
+      <ErrorBoundary
+        hasError={!!error}
+        onReset={() => setError(false)}>
+        <button onClick={() => setError(true)}>Trigger Error</button>
+      </ErrorBoundary>
     </>
   );
 }
