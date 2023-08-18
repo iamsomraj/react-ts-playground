@@ -47,6 +47,23 @@ function App() {
     />
   ));
 
+  const middlePageBtns = () => {
+    const maxPage = Math.floor(total / itemsPerPage);
+
+    return Array(maxPage)
+      .fill(0)
+      .map((_item, index) => (
+        <button
+          key={index}
+          className={`${styles.button} ${page === index ? styles.selected : ''}`}
+          onClick={() => {
+            setPage(index);
+          }}>
+          {index + 1}
+        </button>
+      ));
+  };
+
   const pagination = (
     <div className={styles.page}>
       <button
@@ -59,6 +76,7 @@ function App() {
         }}>
         Prev
       </button>
+      {middlePageBtns()}
       <button
         className={styles.button}
         onClick={() => {

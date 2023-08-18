@@ -3,6 +3,7 @@
   flex-direction: column;
   text-align: center;
   margin: 0 auto;
+  gap: 1rem;
 }
 
 .page {
@@ -20,6 +21,10 @@
   border-radius: 6px;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
+}
+
+.selected {
+  background-color: #ccc;
 }
 
 button:hover {
