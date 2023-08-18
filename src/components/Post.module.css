@@ -1,0 +1,8 @@
+.post {
+    padding: 0.5rem 2rem;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+.post:hover {
+  background-color: #ccc;
+}
