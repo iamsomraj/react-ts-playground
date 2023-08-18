@@ -50,6 +50,7 @@ function App() {
   const pagination = (
     <div className={styles.page}>
       <button
+        className={styles.button}
         onClick={() => {
           setPage((prev) => {
             const newPage = prev - 1;
@@ -59,6 +60,7 @@ function App() {
         Prev
       </button>
       <button
+        className={styles.button}
         onClick={() => {
           setPage((prev) => {
             const newPage = prev + 1;
