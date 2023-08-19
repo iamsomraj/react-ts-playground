@@ -11,6 +11,8 @@ function App() {
     const storedComplete = localStorage.getItem('complete');
     return storedComplete ? JSON.parse(storedComplete) : [];
   });
+  const [isDraggingOverIncomplete, setIsDraggingOverIncomplete] = useState(false);
+  const [isDraggingOverComplete, setIsDraggingOverComplete] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('complete', JSON.stringify(complete));
@@ -78,8 +80,16 @@ function App() {
 
       <div className={styles.board}>
         <ul
-          onDrop={(e) => onDrop(e, 'incomplete')}
-          onDragOver={(e) => e.preventDefault()}>
+          className={`${styles.taskList} ${isDraggingOverIncomplete ? styles.dragOver : ''}`}
+          onDrop={(e) => {
+            onDrop(e, 'incomplete');
+            setIsDraggingOverIncomplete(false);
+          }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDraggingOverIncomplete(true);
+          }}
+          onDragLeave={() => setIsDraggingOverIncomplete(false)}>
           <p>To Do</p>
           {incomplete.map((inc) => (
             <li
@@ -92,10 +102,16 @@ function App() {
         </ul>
 
         <ul
-          onDrop={(e) => onDrop(e, 'complete')}
+          className={`${styles.taskList} ${isDraggingOverComplete ? styles.dragOver : ''}`}
+          onDrop={(e) => {
+            onDrop(e, 'complete');
+            setIsDraggingOverComplete(false);
+          }}
           onDragOver={(e) => {
             e.preventDefault();
-          }}>
+            setIsDraggingOverComplete(true);
+          }}
+          onDragLeave={() => setIsDraggingOverComplete(false)}>
           <p>Done</p>
           {complete.map((comp) => (
             <li

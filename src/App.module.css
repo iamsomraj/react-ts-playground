@@ -47,6 +47,7 @@ ul {
   flex-direction: column;
   gap: 0.5rem;
   background-color: #00fbac9b;
+  transition: background-color 0.3s;
 }
 
 li {
@@ -57,5 +58,9 @@ li {
 }
 
 li:hover {
-    opacity: 0.8;
+  opacity: 0.8;
+}
+
+.dragOver {
+  background-color: #00a37087;
 }
