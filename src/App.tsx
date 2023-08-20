@@ -39,7 +39,6 @@ function App() {
       symbols: ['$', '%', '&', '*', '(', ')'],
     };
     const availableOptions = Object.keys(options).filter((key) => options[key] === true);
-
     return pickRandomCharacter(availableOptions, mapping);
   };
 
