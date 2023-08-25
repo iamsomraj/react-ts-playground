@@ -91,12 +91,12 @@ function App() {
           }}
           onDragLeave={() => setIsDraggingOverIncomplete(false)}>
           <p>To Do</p>
-          {incomplete.map((inc) => (
+          {incomplete.map((incompleteTask) => (
             <li
               draggable
-              onDragStart={(e) => onDragStart(e, inc, 'incomplete')}
-              key={inc}>
-              {inc}
+              onDragStart={(e) => onDragStart(e, incompleteTask, 'incomplete')}
+              key={incompleteTask}>
+              {incompleteTask}
             </li>
           ))}
         </ul>
@@ -113,12 +113,12 @@ function App() {
           }}
           onDragLeave={() => setIsDraggingOverComplete(false)}>
           <p>Done</p>
-          {complete.map((comp) => (
+          {complete.map((completeTask) => (
             <li
               draggable
-              onDragStart={(e) => onDragStart(e, comp, 'complete')}
-              key={comp}>
-              {comp}
+              onDragStart={(e) => onDragStart(e, completeTask, 'complete')}
+              key={completeTask}>
+              {completeTask}
             </li>
           ))}
         </ul>
