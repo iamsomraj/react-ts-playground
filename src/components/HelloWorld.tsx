@@ -11,14 +11,25 @@ const API_URL = 'https://jsonplaceholder.typicode.com/posts';
 
 export default function HelloWorld() {
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
   const [posts, setPosts] = useState<IPost[]>([]);
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      setLoading(false);
-      setPosts(data);
+      setError(false);
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error('Something went wrong!');
+        }
+        const data = await response.json();
+        setPosts(data);
+        setError(false);
+      } catch (error) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchPosts();
   }, []);
@@ -27,6 +38,12 @@ export default function HelloWorld() {
   if (loading) {
     return loaderContent;
   }
+
+  const errorContent = <div>Error occured when we were fetching your details</div>;
+  if (error) {
+    return errorContent;
+  }
+
   return (
     <div>
       {posts.map((post) => (
