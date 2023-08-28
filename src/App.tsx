@@ -18,6 +18,7 @@ function shuffle(array: number[]) {
 const GRID_TYPE = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 const MAX_ATTEMPTS = GRID_TYPE.length;
 const TIME = GRID_TYPE.length * 1000;
+const INTERVAL = TIME / GRID_TYPE.length;
 
 function App() {
   const [correctOrder] = useState(() => {
@@ -29,7 +30,7 @@ function App() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setVisibleIndex((prev) => ++prev);
-    }, 1000);
+    }, INTERVAL);
 
     const timeoutId = setTimeout(() => {
       clearInterval(intervalId);
