@@ -52,7 +52,6 @@ function App() {
             onClick={() => {
               setUserOrder((order) => {
                 if (order.length >= MAX_ATTEMPTS) return order;
-
                 return [...order, index];
               });
             }}>
@@ -60,9 +59,8 @@ function App() {
             <span className='cell-position'>{index}</span>
           </div>
         ))}
-
-        {userOrder.length === MAX_ATTEMPTS ? userOrder.join() === correctOrder.join() ? <span className='winner'>Winner</span> : <span className='loser'>Loser</span> : null}
       </div>
+      {userOrder.length === MAX_ATTEMPTS ? userOrder.join() === correctOrder.join() ? <div className='winner'>Winner</div> : <div className='loser'>Loser</div> : null}
     </>
   );
 }
