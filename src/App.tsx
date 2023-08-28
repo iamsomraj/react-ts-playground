@@ -48,7 +48,7 @@ function App() {
         {GRID_TYPE.map((cell, index) => (
           <div
             key={cell}
-            className={`cell ${visibleIndex === index && 'visible'} ${userOrder.includes(index) && 'green'}`}
+            className={`cell ${visibleIndex === index ? 'visible' : ''} ${userOrder.includes(index) ? 'green' : ''}`}
             onClick={() => {
               setUserOrder((order) => {
                 if (order.length >= MAX_ATTEMPTS) return order;
