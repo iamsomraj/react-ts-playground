@@ -1,6 +1,9 @@
 import styles from './App.module.css';
 import { useEffect, useState } from 'react';
 
+// onDragStart - start (Set Data) onDrop - end (Get Data)
+// onDragOver - preventDefault
+
 function App() {
   const [task, setTask] = useState<string>('');
   const [incomplete, setIncomplete] = useState<string[]>(() => {
