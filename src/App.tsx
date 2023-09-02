@@ -16,14 +16,18 @@ function App() {
     firstInput.focus();
   }, []);
 
-  const onDigitChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const index = parseInt(e.target.name, 10);
+    const inputValue = e.target.value.slice(0, 1);
+
     setDigits((prevDigits) => {
-      prevDigits[index] = e.target.value.slice(0, 1);
+      prevDigits[index] = inputValue;
       return [...prevDigits];
     });
 
-    if (index < NUMBER_OF_OTP_DIGITS - 1 && e.target.value !== '') {
-      (formRef.current?.querySelector?.(`#input-${index + 1}`) as HTMLInputElement)?.focus();
+    if (index < NUMBER_OF_OTP_DIGITS - 1 && inputValue !== '') {
+      const nextInput = formRef.current?.elements[`${index + 1}`] as HTMLInputElement;
+      nextInput.focus();
     } else if (index === NUMBER_OF_OTP_DIGITS - 1) {
       onSubmit();
     }
@@ -44,7 +48,7 @@ function App() {
             maxLength={1}
             name={`${index}`}
             value={digitItem}
-            onChange={(e) => onDigitChange(e, index)}
+            onChange={onInputChange}
           />
         ))}
         {JSON.stringify(digits)}
