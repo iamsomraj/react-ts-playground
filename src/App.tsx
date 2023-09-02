@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 const NUMBER_OF_OTP_DIGITS = 4;
 
@@ -10,11 +10,25 @@ function App() {
   const formRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
-    if (!formRef.current) return;
+    if (!formRef.current) {
+      return;
+    }
 
     const firstInput = formRef.current.firstElementChild as HTMLInputElement;
     firstInput.focus();
   }, []);
+
+  const formattedDigits = useMemo(() => {
+    return digits.join('');
+  }, [digits]);
+
+  useEffect(() => {
+    if (formattedDigits.length < NUMBER_OF_OTP_DIGITS) {
+      return;
+    }
+
+    console.log({ digits: formattedDigits });
+  }, [formattedDigits]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const index = parseInt(e.target.name, 10);
@@ -28,13 +42,7 @@ function App() {
     if (index < NUMBER_OF_OTP_DIGITS - 1 && inputValue !== '') {
       const nextInput = formRef.current?.elements[`${index + 1}`] as HTMLInputElement;
       nextInput.focus();
-    } else if (index === NUMBER_OF_OTP_DIGITS - 1) {
-      onSubmit();
     }
-  };
-
-  const onSubmit = () => {
-    console.log({ digits });
   };
 
   return (
@@ -51,7 +59,6 @@ function App() {
             onChange={onInputChange}
           />
         ))}
-        {JSON.stringify(digits)}
       </form>
     </>
   );
