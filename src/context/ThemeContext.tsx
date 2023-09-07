@@ -42,6 +42,7 @@ const themeReducer = (state: IThemeState = themeState, action: actionType): IThe
   }
 };
 
+// step - 1 
 const useThemeContext = () => {
   const [state, dispatch] = useReducer(themeReducer, themeState);
   const setDarkTheme = () => {
@@ -65,18 +66,21 @@ const useThemeContext = () => {
   };
 };
 
+// step - 2 
 const initialState = {
   theme: 'dark',
   setLightTheme: () => {},
   setDarkTheme: () => {},
 };
 
+// step - 3
 const ThemeContext = React.createContext(initialState);
 
 type ThemeContextProviderProps = {
   children: React.ReactNode;
 };
 
+// step - 4
 export const ThemeContextProvider: React.FunctionComponent<ThemeContextProviderProps> = (props) => {
   return <ThemeContext.Provider value={useThemeContext()}>{props.children}</ThemeContext.Provider>;
 };
