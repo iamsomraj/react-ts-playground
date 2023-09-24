@@ -45,6 +45,17 @@ function App() {
     }
   };
 
+  const onInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text/plain').slice(0, NUMBER_OF_OTP_DIGITS);
+    setDigits((prevDigits) => {
+      for (let i = 0; i < NUMBER_OF_OTP_DIGITS; i++) {
+        prevDigits[i] = `${pastedData[i]}`;
+      }
+      return [...prevDigits];
+    });
+  };
+
   return (
     <>
       <form ref={formRef}>
@@ -57,6 +68,7 @@ function App() {
             name={`${index}`}
             value={digitItem}
             onChange={onInputChange}
+            onPaste={onInputPaste}
           />
         ))}
       </form>
