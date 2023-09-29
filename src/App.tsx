@@ -5,15 +5,19 @@ type GameContainerProps = {
   entries: [string, string][];
 };
 
+const isCorrectAnswer = (entries: [string, string][], guesses: string[]) => {
+  return entries.some((correctPair) => correctPair.every((element) => guesses.includes(element)));
+};
+
 const GameContainer = ({ buttons, entries }: GameContainerProps) => {
-  const [guesses, setGuesses] = useState<string[]>([]);
-  const [correctGuesses, setCorrectGuesses] = useState<string[]>([]);
+  const [guesses, setGuesses] = useState<string[]>([]); // stores current guesses
+  const [correctGuesses, setCorrectGuesses] = useState<string[]>([]); // stores only correct answers
 
   const onButtonClick = (btn: string) => {
     setGuesses((prevGuesses) => {
       const newGuesses = [...prevGuesses, btn];
       if (newGuesses.length === 2) {
-        const isCorrect = entries.some((correctPair) => correctPair.every((element) => newGuesses.includes(element)));
+        const isCorrect = isCorrectAnswer(entries, newGuesses);
         if (isCorrect) {
           setCorrectGuesses((prevCorrectGuesses) => {
             return [...new Set([...prevCorrectGuesses, ...newGuesses])];
@@ -38,7 +42,7 @@ const GameContainer = ({ buttons, entries }: GameContainerProps) => {
     }
 
     const isPairSelected = guesses.length === 2;
-    const isCorrect = entries.some((correctPair) => correctPair.every((element) => guesses.includes(element)));
+    const isCorrect = isCorrectAnswer(entries, guesses);
 
     if (isPairSelected && !isCorrect) {
       return {
