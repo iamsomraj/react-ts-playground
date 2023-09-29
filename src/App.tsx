@@ -12,17 +12,19 @@ const GameContainer = ({ buttons, entries }: GameContainerProps) => {
   const onButtonClick = (btn: string) => {
     setGuesses((prevGuesses) => {
       const newGuesses = [...prevGuesses, btn];
+      if (newGuesses.length === 2) {
+        const isCorrect = entries.some((correctPair) => correctPair.every((element) => newGuesses.includes(element)));
+        if (isCorrect) {
+          setCorrectGuesses((prevCorrectGuesses) => {
+            return [...new Set([...prevCorrectGuesses, ...newGuesses])];
+          });
+        }
+      }
       if (newGuesses.length > 2) {
         return [btn];
       }
-      return newGuesses;
+      return [...newGuesses];
     });
-
-    const isCorrect = entries.some((correctPair) => correctPair.every((element) => guesses.includes(element)));
-    if (guesses.length === 2 && isCorrect) {
-      const newCorrectGuesses = [...guesses];
-      setCorrectGuesses(newCorrectGuesses);
-    }
   };
 
   const getButtonStyle = (btn: string) => {
@@ -53,7 +55,7 @@ const GameContainer = ({ buttons, entries }: GameContainerProps) => {
 
   const filteredButtons = buttons.filter((btn) => !correctGuesses.includes(btn));
 
-  return (
+  return filteredButtons.length > 0 ? (
     <div>
       {filteredButtons.map((btn, index) => (
         <button
@@ -64,6 +66,8 @@ const GameContainer = ({ buttons, entries }: GameContainerProps) => {
         </button>
       ))}
     </div>
+  ) : (
+    <div>Congrats</div>
   );
 };
 
