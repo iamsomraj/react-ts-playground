@@ -15,9 +15,8 @@ export default function HelloWorld() {
   const [posts, setPosts] = useState<IPost[]>([]);
   useEffect(() => {
     const fetchPosts = async () => {
-      setLoading(true);
-      setError(false);
       try {
+        setLoading(true);
         const response = await fetch(API_URL);
         if (!response.ok) {
           throw new Error('Something went wrong!');
@@ -49,7 +48,8 @@ export default function HelloWorld() {
       {posts.map((post) => (
         <div
           key={post.id}
-          style={{ padding: '2rem' }}>
+          style={{ padding: '2rem' }}
+        >
           <strong>{post.title}</strong>
           <p>{post.body}</p>
           <span>Written By : {post.userId}</span>
