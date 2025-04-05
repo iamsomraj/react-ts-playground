@@ -1,136 +1,121 @@
 import { useState } from 'react';
 
+type FormDataType = Record<number, boolean> | null;
+
 type CheckboxType = {
   id: number;
   name: string;
-  value: boolean;
   child: CheckboxType[];
+};
+
+type CheckboxProps = {
+  item: CheckboxType;
+  formData: FormDataType;
+  setFormData: (checkbox: CheckboxType, id: number, isChecked: boolean) => void;
 };
 
 const checkboxData: CheckboxType[] = [
   {
     id: 1,
     name: 'Fruit',
-    value: false,
     child: [
       {
         id: 1.1,
         name: 'Apple',
-        value: false,
         child: [
-          { id: 1.11, name: 'Green Apple', value: false, child: [] },
-          { id: 1.12, name: 'Red Apple', value: false, child: [] },
+          { id: 1.11, name: 'Green Apple', child: [] },
+          { id: 1.12, name: 'Red Apple', child: [] },
         ],
       },
-      { id: 1.2, name: 'Orange', value: false, child: [] },
-      { id: 1.3, name: 'Mango', value: false, child: [] },
+      { id: 1.2, name: 'Orange', child: [] },
+      { id: 1.3, name: 'Mango', child: [] },
     ],
   },
   {
     id: 2,
     name: 'Vegetable',
-    value: false,
     child: [
       {
         id: 2.1,
         name: 'Potato',
-        value: false,
         child: [
-          { id: 2.11, name: 'Good Potato', value: false, child: [] },
-          { id: 2.12, name: 'Bad Potato', value: false, child: [] },
+          { id: 2.11, name: 'Good Potato', child: [] },
+          { id: 2.12, name: 'Bad Potato', child: [] },
         ],
       },
-      { id: 2.2, name: 'Onion', value: false, child: [] },
+      { id: 2.2, name: 'Onion', child: [] },
     ],
   },
 ];
 
-const Checkbox = ({ item, onCheckboxChange }: { item: CheckboxType; onCheckboxChange: (item: CheckboxType, checked: boolean) => void }) => {
+function Checkbox({ item, formData, setFormData }: CheckboxProps) {
   return (
-    <div>
+    <div className='parent'>
       <input
-        id={String(item.id)}
         type='checkbox'
-        checked={item.value}
-        onChange={(e) => onCheckboxChange(item, e.target.checked)}
+        id={item.name}
+        name={item.name}
+        value={item.id}
+        checked={formData?.[item.id] || false}
+        onChange={(e) => setFormData(item, item.id, e.target.checked)}
       />
-      <label
-        htmlFor={String(item.id)}
-        style={{ paddingLeft: '5px' }}
-      >
-        {item.name}
-      </label>
-      <div style={{ paddingLeft: '20px' }}>
-        {item.child.length
-          ? item.child.map((childItem) => (
-              <Checkbox
-                key={childItem.id}
-                item={childItem}
-                onCheckboxChange={onCheckboxChange}
-              />
-            ))
-          : null}
-      </div>
+      <label htmlFor={item.name}>{item.name}</label>
+      {item?.child
+        ? item.child.map((childItem) => (
+            <Checkbox
+              key={childItem.id}
+              item={childItem}
+              formData={formData}
+              setFormData={setFormData}
+            />
+          ))
+        : null}
     </div>
   );
-};
+}
 
 export default function App() {
-  const [formData, setFormData] = useState(() => checkboxData);
-  
-  const onCheckboxChange = (item: CheckboxType, isChecked: boolean) => {
-    const newFormData = JSON.parse(JSON.stringify(formData));
+  const [formData, setFormData] = useState<FormDataType>(null);
 
-    const updateItem = (items: CheckboxType[], targetId: number, checked: boolean): boolean => {
-      let allChildrenChecked = true;
+  const handleCheckboxChange = (item: CheckboxType, id: number, isChecked: boolean) => {
+    setFormData((prevFormData) => {
+      const newFormData = { ...prevFormData, [id]: isChecked };
 
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].id === targetId) {
-          // Update the clicked item
-          items[i].value = checked;
-
-          // Update all children recursively
-          if (items[i].child.length > 0) {
-            items[i].child.forEach((child) => {
-              updateItem([child], child.id, checked);
-            });
-          }
-
-          return checked;
+      const updateChildren = (item: CheckboxType, isChecked: boolean) => {
+        if (item.child.length > 0) {
+          item.child.forEach((node) => {
+            newFormData[node.id] = isChecked;
+            updateChildren(node, isChecked);
+          });
         }
+        return;
+      };
 
-        // Check if this item has children that might contain our target
-        if (items[i].child.length > 0) {
-          const childrenAllChecked = updateItem(items[i].child, targetId, checked);
+      updateChildren(item, isChecked);
 
-          // Update parent based on children's state
-          if (childrenAllChecked !== undefined) {
-            // Check if all siblings are checked
-            const allSiblingsChecked = items[i].child.every((child) => child.value);
-            items[i].value = allSiblingsChecked;
-            allChildrenChecked = allChildrenChecked && allSiblingsChecked;
-          } else {
-            allChildrenChecked = allChildrenChecked && items[i].value;
-          }
-        } else {
-          allChildrenChecked = allChildrenChecked && items[i].value;
-        }
-      }
+      const updateParent = (item: CheckboxType) => {
+        const childrenSelected = item.child.every((citem) => {
+          if (citem.child.length > 0) updateParent(citem);
 
-      return allChildrenChecked;
-    };
+          return !!newFormData[citem.id];
+        });
+        newFormData[item.id] = childrenSelected;
+      };
 
-    updateItem(newFormData, item.id, isChecked);
-    setFormData(newFormData);
+      checkboxData.map((cb) => updateParent(cb));
+
+      return newFormData;
+    });
   };
 
   return (
     <div>
-      {formData.map((item) => (
+      {checkboxData.map((item) => (
         <Checkbox
           key={item.id}
           item={item}
-          onCheckboxChange={onCheckboxChange}
+          formData={formData}
+          setFormData={handleCheckboxChange}
         />
       ))}
     </div>

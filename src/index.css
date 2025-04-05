@@ -2,3 +2,11 @@
   margin: 0;
   padding: 0;
 }
+
+.parent {
+  padding-left: 20px;
+}
+
+label {
+  padding-left: 5px;
+}
