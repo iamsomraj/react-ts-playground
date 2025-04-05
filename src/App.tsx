@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, memo, useCallback } from 'react';
 
-type FormDataType = Record<number, boolean> | null;
+type FormDataType = Record<number, boolean>;
 
 type CheckboxType = {
   id: number;
@@ -11,7 +11,7 @@ type CheckboxType = {
 type CheckboxProps = {
   item: CheckboxType;
   formData: FormDataType;
-  setFormData: (checkbox: CheckboxType, id: number, isChecked: boolean) => void;
+  onChange: (item: CheckboxType, id: number, isChecked: boolean) => void;
 };
 
 const checkboxData: CheckboxType[] = [
@@ -48,65 +48,75 @@ const checkboxData: CheckboxType[] = [
   },
 ];
 
-function Checkbox({ item, formData, setFormData }: CheckboxProps) {
+// Helper functions for updating checkbox states
+const updateChildren = (formData: FormDataType, item: CheckboxType, isChecked: boolean): void => {
+  if (item.child.length > 0) {
+    item.child.forEach((node) => {
+      formData[node.id] = isChecked;
+      updateChildren(formData, node, isChecked);
+    });
+  }
+};
+
+const updateParent = (formData: FormDataType, item: CheckboxType): void => {
+  const childrenSelected = item.child.every((citem) => {
+    if (citem.child.length > 0) updateParent(formData, citem);
+    return !!formData[citem.id];
+  });
+  formData[item.id] = childrenSelected;
+};
+
+// Memoized checkbox component to prevent unnecessary re-renders
+const Checkbox = memo(({ item, formData, onChange }: CheckboxProps) => {
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(item, item.id, e.target.checked);
+    },
+    [item, onChange]
+  );
+
   return (
     <div className='parent'>
       <input
         type='checkbox'
-        id={item.name}
+        id={`checkbox-${item.id}`}
         name={item.name}
         value={item.id}
         checked={formData?.[item.id] || false}
-        onChange={(e) => setFormData(item, item.id, e.target.checked)}
+        onChange={handleChange}
       />
-      <label htmlFor={item.name}>{item.name}</label>
-      {item?.child
-        ? item.child.map((childItem) => (
-            <Checkbox
-              key={childItem.id}
-              item={childItem}
-              formData={formData}
-              setFormData={setFormData}
-            />
-          ))
-        : null}
+      <label htmlFor={`checkbox-${item.id}`}>{item.name}</label>
+      {item.child.length > 0 &&
+        item.child.map((childItem) => (
+          <Checkbox
+            key={childItem.id}
+            item={childItem}
+            formData={formData}
+            onChange={onChange}
+          />
+        ))}
     </div>
   );
-}
+});
+
+Checkbox.displayName = 'Checkbox';
 
 export default function App() {
-  const [formData, setFormData] = useState<FormDataType>(null);
+  const [formData, setFormData] = useState<FormDataType>({});
 
-  const handleCheckboxChange = (item: CheckboxType, id: number, isChecked: boolean) => {
+  const handleCheckboxChange = useCallback((item: CheckboxType, id: number, isChecked: boolean) => {
     setFormData((prevFormData) => {
       const newFormData = { ...prevFormData, [id]: isChecked };
 
-      const updateChildren = (item: CheckboxType, isChecked: boolean) => {
-        if (item.child.length > 0) {
-          item.child.forEach((node) => {
-            newFormData[node.id] = isChecked;
-            updateChildren(node, isChecked);
-          });
-        }
-        return;
-      };
+      // Update children based on parent selection
+      updateChildren(newFormData, item, isChecked);
 
-      updateChildren(item, isChecked);
-
-      const updateParent = (item: CheckboxType) => {
-        const childrenSelected = item.child.every((citem) => {
-          if (citem.child.length > 0) updateParent(citem);
-
-          return !!newFormData[citem.id];
-        });
-        newFormData[item.id] = childrenSelected;
-      };
-
-      checkboxData.map((cb) => updateParent(cb));
+      // Update all parent checkboxes
+      checkboxData.forEach((checkbox) => updateParent(newFormData, checkbox));
 
       return newFormData;
     });
-  };
+  }, []);
 
   return (
     <div>
@@ -115,7 +125,7 @@ export default function App() {
           key={item.id}
           item={item}
           formData={formData}
-          setFormData={handleCheckboxChange}
+          onChange={handleCheckboxChange}
         />
       ))}
     </div>
