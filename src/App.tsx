@@ -15,6 +15,29 @@ export default function App() {
     inputRefs.current[nextIndex]?.focus();
   }
 
+  function handleKeyDown(index: number, event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Backspace') {
+      event.preventDefault(); // prevent default backspace navigation
+      const newOtp = [...otp];
+
+      if (newOtp[index]) {
+        // If current box has a value → just clear it
+        newOtp[index] = '';
+        setOtp(newOtp);
+        return;
+      }
+
+      if (index > 0) {
+        // If empty → move to previous
+        const prevOtp = [...newOtp];
+        prevOtp[index - 1] = '';
+        inputRefs.current[index - 1]?.focus();
+        setOtp(prevOtp);
+        return;
+      }
+    }
+  }
+
   return (
     <div className='App'>
       {otp.join('')}
@@ -27,6 +50,7 @@ export default function App() {
             type='text'
             value={otp[index]}
             onChange={(event) => handleInputChange(index, event)}
+            onKeyDown={(event) => handleKeyDown(index, event)}
           />
         ))}
     </div>
