@@ -1,79 +1,34 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const NUMBER_OF_OTP_DIGITS = 4;
 
-function App() {
-  const [digits, setDigits] = useState<string[]>(() => {
-    return Array(NUMBER_OF_OTP_DIGITS).fill('');
-  });
+export default function App() {
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [otp, setOtp] = useState<string[]>(Array(NUMBER_OF_OTP_DIGITS).fill(''));
 
-  const formRef = useRef<HTMLFormElement | null>(null);
-
-  useEffect(() => {
-    if (!formRef.current) {
-      return;
-    }
-
-    const firstInput = formRef.current.firstElementChild as HTMLInputElement;
-    firstInput.focus();
-  }, []);
-
-  const formattedDigits = useMemo(() => {
-    return digits.join('');
-  }, [digits]);
-
-  useEffect(() => {
-    if (formattedDigits.length < NUMBER_OF_OTP_DIGITS) {
-      return;
-    }
-
-    console.log({ digits: formattedDigits });
-  }, [formattedDigits]);
-
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const index = parseInt(e.target.name, 10);
-    const inputValue = e.target.value.slice(0, 1);
-
-    setDigits((prevDigits) => {
-      prevDigits[index] = inputValue;
-      return [...prevDigits];
-    });
-
-    if (index < NUMBER_OF_OTP_DIGITS - 1 && inputValue !== '') {
-      const nextInput = formRef.current?.elements[`${index + 1}`] as HTMLInputElement;
-      nextInput.focus();
-    }
-  };
-
-  const onInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text/plain').slice(0, NUMBER_OF_OTP_DIGITS);
-    setDigits((prevDigits) => {
-      for (let i = 0; i < NUMBER_OF_OTP_DIGITS; i++) {
-        prevDigits[i] = `${pastedData[i]}`;
-      }
-      return [...prevDigits];
-    });
-  };
+  function handleInputChange(index: number, event: React.ChangeEvent<HTMLInputElement>) {
+    const newOtp = [...otp];
+    const val = event.target.value.slice(-1) || '';
+    newOtp[index] = val;
+    setOtp([...newOtp]);
+    const nextIndex = (index + 1) % NUMBER_OF_OTP_DIGITS;
+    inputRefs.current[nextIndex]?.focus();
+  }
 
   return (
-    <>
-      <form ref={formRef}>
-        {digits.map((digitItem, index) => (
+    <div className='App'>
+      {otp.join('')}
+      {Array(NUMBER_OF_OTP_DIGITS)
+        .fill(null)
+        .map((_, index) => (
           <input
-            id={`input-${index}`}
-            type='number'
+            ref={(element) => (inputRefs.current[index] = element)}
             key={index}
-            maxLength={1}
-            name={`${index}`}
-            value={digitItem}
-            onChange={onInputChange}
-            onPaste={onInputPaste}
+            type='text'
+            value={otp[index]}
+            onChange={(event) => handleInputChange(index, event)}
           />
         ))}
-      </form>
-    </>
+    </div>
   );
 }
-
-export default App;
