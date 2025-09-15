@@ -21,19 +21,12 @@ export default function App() {
       const newOtp = [...otp];
 
       if (newOtp[index]) {
-        // If current box has a value → just clear it
         newOtp[index] = '';
         setOtp(newOtp);
-        return;
       }
 
       if (index > 0) {
-        // If empty → move to previous
-        const prevOtp = [...newOtp];
-        prevOtp[index - 1] = '';
         inputRefs.current[index - 1]?.focus();
-        setOtp(prevOtp);
-        return;
       }
     }
   }
@@ -45,6 +38,7 @@ export default function App() {
         .fill(null)
         .map((_, index) => (
           <input
+            className='input'
             ref={(element) => (inputRefs.current[index] = element)}
             key={index}
             type='text'
