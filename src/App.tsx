@@ -1,9 +1,12 @@
-import HelloWorld from './components/HelloWorld';
+import SelectableGrid from './components/SelectableGrid';
 
 function App() {
   return (
     <>
-      <HelloWorld />
+      <SelectableGrid
+        row={5}
+        col={5}
+      />
     </>
   );
 }
